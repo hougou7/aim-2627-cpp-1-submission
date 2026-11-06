@@ -18,7 +18,29 @@ namespace aim::q3 {
 
 
 // BEGIN IMPLEMENTATION
-std::vector<int> alarms(const std::vector<int>& values, int k, long long threshold) { throw std::runtime_error("TODO"); }
+
+std::vector<int> alarms(const std::vector<int>& values, int k, long long threshold) {
+    int n = values.size();
+    std::vector<int> result;
+    result.clear();
+    if (k < 1 || k > n)
+        return result;
+    int l=0,r=k-1;
+    long long sum =0;
+    for(int i = 0; i < k; i++)
+        sum += values[i];
+    if (sum > threshold)
+        result.push_back(r);
+    while (r < n - 1) {
+        sum -= values[l];
+        l++;
+        r++;
+        sum += values[r];
+        if (sum > threshold)
+            result.push_back(r);
+    }
+    return result;
+}
 // END IMPLEMENTATION
 }
 

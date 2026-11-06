@@ -18,7 +18,45 @@ namespace aim::q2 {
 struct LabelEdit { std::string from; std::string to; };
 
 // BEGIN IMPLEMENTATION
-std::string edit_labels(std::string labels, const std::vector<LabelEdit>& edits) { throw std::runtime_error("TODO"); }
+std::string add_to(std::string labels,std::string to){
+    if(labels.empty())
+        return to;
+    return labels + "," + to;
+}
+
+std::string edit_labels(std::string labels, const std::vector<LabelEdit>& edits) {
+    for(int i = 0; i < edits.size(); i++){
+        std::string from = edits[i].from;
+        std::string to = edits[i].to;
+        if (from.empty() && !to.empty())
+            labels = add_to(labels,to);
+        else if (!from.empty()){
+            int pos = labels.find(from);
+            while (pos != std::string::npos) {
+                int end = pos + from.length();
+                bool leftOK = (pos == 0 || labels[pos - 1] == ',');
+                bool rightOK = (end == labels.size() || labels[end] == ',');
+                if (leftOK && rightOK) {
+                    break;
+                }
+                pos = labels.find(from, pos + 1);
+            }
+            if (pos != std::string::npos){
+                if(to.empty()){
+                    if(pos == 0)
+                        labels = labels.erase(pos, from.length()+1);
+                    else
+                        labels = labels.erase(pos-1, from.length()+1);
+                }
+                else {
+                    labels.replace(pos, from.length(), to);
+                }
+            }
+        }
+
+    }
+    return labels;
+}
 // END IMPLEMENTATION
 }
 

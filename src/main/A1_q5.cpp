@@ -18,7 +18,52 @@ namespace aim::q5 {
 
 
 // BEGIN IMPLEMENTATION
-std::vector<std::vector<int>> risk(const std::vector<std::string>& grid) { throw std::runtime_error("TODO"); }
+std::vector<std::vector<int>> risk(const std::vector<std::string>& grid) {
+    if (grid.empty()) {
+        return {};
+    }
+
+    if (grid[0].empty()) {
+        throw std::invalid_argument("error");
+    }
+
+    for (int i = 0; i < grid.size(); i++) {
+        std::string row = grid[i];
+        if (row.size() != grid[0].size()) {
+            throw std::invalid_argument("error");
+        }
+
+        for (int j = 0; j < row.size(); j++) {
+            char cell = row[j];
+            if (cell != '.' && cell != '#') {
+                throw std::invalid_argument("error");
+            }
+        }
+    }
+    std::vector<std::vector<int>> result(grid.size(), std::vector<int>(grid[0].size(), 0));
+    for (int i = 0; i < grid.size();i++) {
+        for (int j = 0; j < grid[i].size();j++) {
+            if (grid[i][j] == '#') {
+                result[i][j] = -1;
+            }
+            else if (grid[i][j] == '.') {
+                if(i > 0 && grid[i-1][j] == '#') {
+                    result[i][j]++;
+                }
+                if(i < grid.size()-1 && grid[i+1][j] == '#') {
+                    result[i][j]++;
+                }
+                if(j > 0 && grid[i][j-1] == '#') {
+                    result[i][j]++;
+                }
+                if(j < grid[i].size()-1 && grid[i][j+1] == '#') {
+                    result[i][j]++;
+                }
+            }
+        }
+    }
+    return result;
+}
 // END IMPLEMENTATION
 }
 

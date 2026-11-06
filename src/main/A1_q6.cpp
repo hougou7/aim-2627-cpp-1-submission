@@ -18,7 +18,54 @@ namespace aim::q6 {
 struct Target { int id; int x; int y; int hp; bool visible; };
 
 // BEGIN IMPLEMENTATION
-int select_target(const std::vector<Target>& targets, int max_range) { throw std::runtime_error("TODO"); }
+
+Target cmp(const Target& a, const Target& b) {
+    long long distance_a = 1ll * a.x * a.x + 1ll * a.y * a.y;
+    long long distance_b = 1ll * b.x * b.x + 1ll * b.y * b.y;
+    if (a.hp < b.hp) {
+        return a;
+    }
+    else if (a.hp > b.hp) {
+        return b;
+    }
+    else if (distance_a < distance_b){
+         return a;
+    }
+    else if (distance_a > distance_b) {
+        return b;
+    }
+    else if (a.id < b.id) {
+        return a;
+    }
+    else {
+        return b;
+    }
+}
+
+int select_target(const std::vector<Target>& targets, int max_range) {
+    if (max_range < 0)
+        return -1;
+    Target result;
+    result.id = -1;
+    for(int i = 0; i < targets.size(); i++) {
+        Target v = targets[i];
+        // std::cerr<< "Target: id=" << v.id << ", x=" << v.x << ", y=" << v.y << ", hp=" << v.hp << ", visible=" << v.visible << "\n";
+        if (!v.visible || v.hp <= 0) {
+            continue;
+        }
+        long long distance = 1ll * v.x * v.x + 1ll * v.y * v.y;
+        if (distance <= 1ll * max_range * max_range) {
+            if (result.id == -1) {
+                result = v;
+            }
+            else {
+                result = cmp(result, v);
+            }
+        }
+        // std::cerr<< "Current best target: id=" << result.id << ", x=" << result.x << ", y=" << result.y << ", hp=" << result.hp << ", visible=" << result.visible << "\n";
+    }
+    return result.id;
+}
 // END IMPLEMENTATION
 }
 

@@ -18,7 +18,23 @@ namespace aim::q7 {
 struct FireResult { int shots; int rejected; int ammo; int heat; };
 
 // BEGIN IMPLEMENTATION
-FireResult simulate(int ammo, int heat, int cool, int shot_heat, const std::vector<int>& requests) { throw std::runtime_error("TODO"); }
+FireResult simulate(int ammo, int heat, int cool, int shot_heat, const std::vector<int>& requests) {
+    FireResult result = {0, 0, ammo, heat};
+    for (int i = 0; i < requests.size();i++) {
+        result.heat = std::max(0, result.heat - cool);
+        if (requests[i] == 0)
+            continue;
+        if (result.heat + shot_heat > 100 || result.ammo <= 0) {
+            result.rejected++;
+        }
+        else {
+            result.shots++;
+            result.ammo--;
+            result.heat += shot_heat;
+        }
+    }
+    return result;
+}
 // END IMPLEMENTATION
 }
 

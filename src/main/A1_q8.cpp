@@ -19,7 +19,36 @@ struct Telemetry { int id; int hp; };
 struct Summary { int valid; int duplicate; int invalid; long long total_hp; std::vector<int> ids; };
 
 // BEGIN IMPLEMENTATION
-Summary summarize(const std::vector<Telemetry>& frames) { throw std::runtime_error("TODO"); }
+Summary summarize(const std::vector<Telemetry>& frames) {
+    Summary result{0, 0, 0, 0, {}};
+    // std::array<int, 10000> id_count{};
+    int id_count[10000]{};
+    for (int i = 0; i < frames.size(); i++) {
+        const Telemetry& frame = frames[i];
+        // std::cerr<<"Processing frame " << i << ": id=" << frame.id << ", hp=" << frame.hp << "\n";
+        if (frame.hp < -1000 || frame.hp > 1000 || frame.id < 0 || frame.id >= 10000) {
+            result.invalid++;
+            continue;
+        }
+        if (id_count[frame.id] == 0) {
+            result.valid++;
+            if (frame.hp < 0)
+                result.total_hp += 0;
+            else if (frame.hp > 100)
+                result.total_hp += 100;
+            else
+                result.total_hp += frame.hp;
+            result.ids.push_back(frame.id);
+            id_count[frame.id]++;
+        }
+        else {
+            result.duplicate++;
+        }
+        // std::cerr<<"result.valid: " << result.valid << ", result.total_hp: " << result.total_hp << ", result.duplicate: " << result.duplicate <<", result.invalid: " << result.invalid << "\n";
+    }
+    sort(result.ids.begin(), result.ids.end());
+    return result;
+}
 // END IMPLEMENTATION
 }
 
